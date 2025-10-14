@@ -162,7 +162,11 @@ static SIMPLE_DEV_PM_OPS(wiphy_pm_ops, wiphy_suspend, wiphy_resume);
 #define WIPHY_PM_OPS NULL
 #endif
 
+#if LINUX_VERSION_IS_LESS(6,2,0)
 static const void *wiphy_namespace(struct device *d)
+#else
+static const void *wiphy_namespace(const struct device *d)
+#endif
 {
 	struct wiphy *wiphy = container_of(d, struct wiphy, dev);
 
@@ -171,7 +175,9 @@ static const void *wiphy_namespace(struct device *d)
 
 struct class ieee80211_class = {
 	.name = "ieee80211",
+#if LINUX_VERSION_IS_LESS(6,3,0)
 	.owner = THIS_MODULE,
+#endif
 	.dev_release = wiphy_dev_release,
 	.dev_groups = ieee80211_groups,
 	.pm = WIPHY_PM_OPS,
